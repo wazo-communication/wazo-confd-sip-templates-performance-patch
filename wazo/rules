@@ -1,0 +1,33 @@
+#!/bin/sh
+# Copyright 2024 Wazo Team (see the AUTHORS file)
+# SPDX-License-Identifier: GPLv3
+
+set -e
+
+case "$1" in
+    build)
+    ;;
+
+    package)
+        mkdir -p ${pkgdir}/usr/share/wazo-confd-sip-templates-performance-patch
+        cp sip-template-optimization.patch ${pkgdir}/usr/share/wazo-confd-sip-templates-performance-patch
+    ;;
+
+    install)
+        patch --force --reject-file - -p1 -d /usr/lib/python3/dist-packages < /usr/share/wazo-confd-sip-templates-performance-patch/sip-template-optimization.patch
+        systemctl restart wazo-confd
+    ;;
+
+    uninstall)
+        patch --force --reject-file - -R -p1 -d /usr/lib/python3/dist-packages < /usr/share/wazo-confd-sip-templates-performance-patch/sip-template-optimization.patch || true
+        systemctl restart wazo-confd
+    ;;
+
+    postrm)
+    ;;
+
+    *)
+        echo "$0 called with unknown argument '$1'" >&2
+        exit 1
+    ;;
+esac

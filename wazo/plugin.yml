@@ -1,0 +1,11 @@
+name: wazo-confd-sip-templates-performance-patch
+namespace: wazo
+version: 0.0.1
+author: Wazo authors
+display_name: Confd sip templates improvement
+plugin_format_version: 1
+min_wazo_version: 24.01
+max_wazo_version: 24.01
+tags:
+  - patch
+homepage: https://github.com/wazo-communication/wazo-confd-sip-templates-performance-patch

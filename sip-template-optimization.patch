@@ -1,0 +1,41 @@
+commit 3161c3f5b74b4ab68d0e345a3c1a03800882eefa
+Author: franckrupin <frupin@protonmail.com>
+Date:   Tue Feb 13 08:50:31 2024 -0500
+
+    Change strategy
+
+diff --git a/xivo_dao/resources/endpoint_sip/persistor.py b/xivo_dao/resources/endpoint_sip/persistor.py
+index f7a17eca..7c229d3f 100644
+--- a/xivo_dao/resources/endpoint_sip/persistor.py
++++ b/xivo_dao/resources/endpoint_sip/persistor.py
+@@ -1,7 +1,7 @@
+ # Copyright 2015-2022 The Wazo Authors  (see the AUTHORS file)
+ # SPDX-License-Identifier: GPL-3.0-or-later
+ 
+-from sqlalchemy.orm import joinedload
++from sqlalchemy.orm import joinedload, selectinload
+ 
+ from xivo_dao.alchemy.endpoint_sip import EndpointSIP
+ from xivo_dao.helpers import errors, generators
+@@ -21,7 +21,20 @@ class SipPersistor(CriteriaBuilderMixin, BasePersistor):
+         self.tenant_uuids = tenant_uuids
+ 
+     def _find_query(self, criteria):
+-        query = self.session.query(EndpointSIP)
++        query = (
++            self.session.query(EndpointSIP)
++            .options(selectinload('transport'))
++            .options(selectinload('template_relations').selectinload('parent'))
++            .options(selectinload('_aor_section'))
++            .options(selectinload('_auth_section'))
++            .options(selectinload('_endpoint_section'))
++            .options(selectinload('_registration_section'))
++            .options(selectinload('_registration_outbound_auth_section'))
++            .options(selectinload('_identify_section'))
++            .options(selectinload('_outbound_auth_section'))
++            .options(selectinload('line'))
++            .options(selectinload('trunk'))
++        )
+         query = self._filter_tenant_uuid(query)
+         return self.build_criteria(query, criteria)
+ 
